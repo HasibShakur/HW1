@@ -20,6 +20,7 @@ package com.example.pedometer;
 
 import java.util.ArrayList;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -45,6 +46,15 @@ public class StepDetector implements SensorEventListener
     private float   mLastDiff[] = new float[3*2];
     private int     mLastMatch = -1;
     
+    public ArrayBlockingQueue<AccData> objects = new ArrayBlockingQueue<AccData>(20);
+    
+	/*
+    for (int i = 0; i< 20; i++) {
+		objects.put (new AccData());
+    }
+    AccData cur = objects.take();
+	 */
+
     private ArrayList<StepListener> mStepListeners = new ArrayList<StepListener>();
     
     public StepDetector() {
@@ -65,16 +75,42 @@ public class StepDetector implements SensorEventListener
     
     
     //public void onSensorChanged(int sensor, float[] values) {
-    public void onSensorChanged(SensorEvent event) {
+    public void onSensorChanged(SensorEvent event) {   
+        AccData cur = null;
+        ArrayBlockingQueue<AccData> queue = FileWriter.queue;
+    	try {
+    		cur = objects.take();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
         Sensor sensor = event.sensor; 
         synchronized (this) {
-            if (sensor.getType() == Sensor.TYPE_ORIENTATION) {
-            }
-            else {
                 int j = (sensor.getType() == Sensor.TYPE_ACCELEROMETER) ? 1 : 0;
                 //If the sensor is the accelerometer
-                if (j == 1) {
-                    float vSum = 0;
+                if (j == 1) {            	
+                	cur.acc_x[cur.index] = event.values[0];
+                			cur.acc_y[cur.index] = event.values[1];
+                			cur.acc_z[cur.index] = event.values[2];
+                			cur.index = cur.index + 1;
+                			if (cur.index == 20) {
+                				if (queue.offer(cur)) {
+                					if (objects.offer(cur) == false) throw new IllegalStateException();
+                					cur = objects.poll();
+                				}
+                				cur.index = 0;
+                			}
+                	
+                	
+                	
+                	
+                	
+                	
+                	
+                	
+                	
+                	
+                	/*
+                	float vSum = 0;
                     //Get the x, y, & z values -- and stick them into a sum
                     for (int i=0 ; i<3 ; i++) {
                         final float v = mYOffset + event.values[i] * mScale[j];
@@ -124,10 +160,11 @@ public class StepDetector implements SensorEventListener
                     }
                     mLastDirections[k] = direction;
                     mLastValues[k] = v;
+                */
                 }
             }
         }
-    }
+    
     
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
         // TODO Auto-generated method stub

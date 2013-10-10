@@ -18,6 +18,8 @@
 
 package com.example.pedometer;
 
+import java.util.concurrent.ArrayBlockingQueue;
+
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -100,6 +102,13 @@ public class StepService extends Service {
         
         // Start detecting
         mStepDetector = new StepDetector();
+        for (int i = 0; i< 20; i++) {
+    		try {
+				mStepDetector.objects.put (new AccData());
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+        }
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         registerDetector();
 
