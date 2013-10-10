@@ -18,6 +18,8 @@
 
 package com.example.pedometer;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import android.app.Notification;
@@ -33,6 +35,7 @@ import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.os.Binder;
+import android.os.Environment;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
@@ -109,6 +112,27 @@ public class StepService extends Service {
 				e.printStackTrace();
 			}
         }
+        
+        File f = new File(Environment.getExternalStorageDirectory() + File.separator + "example.csv");
+
+		try {
+			mStepDetector.w = new AsyncFileWriter( f );
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+    	
+		mStepDetector.w.open();
+
+    	try {
+			mStepDetector.cur = mStepDetector.objects.take();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	
+		
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         registerDetector();
 

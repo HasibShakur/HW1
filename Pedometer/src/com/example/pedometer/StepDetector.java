@@ -18,6 +18,8 @@
 
 package com.example.pedometer;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -26,6 +28,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.Environment;
 import android.util.Log;
 
 /**
@@ -45,6 +48,10 @@ public class StepDetector implements SensorEventListener
     private float   mLastExtremes[][] = { new float[3*2], new float[3*2] };
     private float   mLastDiff[] = new float[3*2];
     private int     mLastMatch = -1;
+    public File f;
+    public AsyncFileWriter w;
+    public AccData cur;
+
     
     public ArrayBlockingQueue<AccData> objects = new ArrayBlockingQueue<AccData>(20);
     
@@ -75,32 +82,30 @@ public class StepDetector implements SensorEventListener
     
     
     public void onSensorChanged(SensorEvent event) {  
-    	//FileWriter w = new FileWriter();
-    	//new Thread(w).start();
-        //ArrayBlockingQueue<AccData> queue = FileWriter.queue;
-    	
-        AccData cur = null;
-    	try {
-    		cur = objects.take();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+    	Log.i("onSensorChanged", "" + cur);
+
         Sensor sensor = event.sensor; 
         synchronized (this) {
                 int j = (sensor.getType() == Sensor.TYPE_ACCELEROMETER) ? 1 : 0;
                 //If the sensor is the accelerometer
-                if (j == 1) {            	
-                	cur.acc_x[cur.index] = event.values[0];
-        			cur.acc_y[cur.index] = event.values[1];
-        			cur.acc_z[cur.index] = event.values[2];
-        			cur.index = cur.index + 1;
-        			if (cur.index > 20) {
+                if (j == 1) {            
+                	for (int i = 0; i < 20 ; i++) {
+	                	Log.i("inside loop", "" + event.values[0]);
+	                	cur.acc_x[i] = event.values[0];
+	        			cur.acc_y[i] = event.values[1];
+	        			cur.acc_z[i] = event.values[2];
+                	}
+        			
+    				Log.i("after for" , "" + cur.index);
+    				if (w.append(cur)) {
+    					cur = objects.poll();
+    				}
+    				
+    				
         				/*if (queue.offer(cur)) {
         					if (objects.offer(cur) == false) throw new IllegalStateException();
         					cur = objects.poll();
-        				}*/
-        				cur.index = 0;
-        			}
+        				}*/        			
                 	
                 	
                 	
