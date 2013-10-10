@@ -1,8 +1,8 @@
 package com.example.pedometer;
 
 public class AccData {
-	float[] acc_x;
-	float[] acc_y;
-	float[] acc_z;
+	float[] acc_x = new float[20];
+	float[] acc_y = new float[20];
+	float[] acc_z = new float[20];
 	int index = 0;
 }

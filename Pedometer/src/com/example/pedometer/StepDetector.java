@@ -74,10 +74,12 @@ public class StepDetector implements SensorEventListener
     
     
     
-    //public void onSensorChanged(int sensor, float[] values) {
-    public void onSensorChanged(SensorEvent event) {   
+    public void onSensorChanged(SensorEvent event) {  
+    	//FileWriter w = new FileWriter();
+    	//new Thread(w).start();
+        //ArrayBlockingQueue<AccData> queue = FileWriter.queue;
+    	
         AccData cur = null;
-        ArrayBlockingQueue<AccData> queue = FileWriter.queue;
     	try {
     		cur = objects.take();
 		} catch (InterruptedException e) {
@@ -89,16 +91,16 @@ public class StepDetector implements SensorEventListener
                 //If the sensor is the accelerometer
                 if (j == 1) {            	
                 	cur.acc_x[cur.index] = event.values[0];
-                			cur.acc_y[cur.index] = event.values[1];
-                			cur.acc_z[cur.index] = event.values[2];
-                			cur.index = cur.index + 1;
-                			if (cur.index == 20) {
-                				if (queue.offer(cur)) {
-                					if (objects.offer(cur) == false) throw new IllegalStateException();
-                					cur = objects.poll();
-                				}
-                				cur.index = 0;
-                			}
+        			cur.acc_y[cur.index] = event.values[1];
+        			cur.acc_z[cur.index] = event.values[2];
+        			cur.index = cur.index + 1;
+        			if (cur.index > 20) {
+        				/*if (queue.offer(cur)) {
+        					if (objects.offer(cur) == false) throw new IllegalStateException();
+        					cur = objects.poll();
+        				}*/
+        				cur.index = 0;
+        			}
                 	
                 	
                 	
