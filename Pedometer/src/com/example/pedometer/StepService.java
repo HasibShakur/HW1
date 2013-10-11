@@ -107,14 +107,16 @@ public class StepService extends Service {
         for (int i = 0; i< 20; i++) {
     		try {
 				mStepDetector.objects.put (new AccData());
+				mStepDetector.objects_gyro.put (new GyroData());
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
         }
-        File f = new File(Environment.getExternalStorageDirectory() + File.separator + "trace1-data-acc.csv");
+       
 
 		try {
-			mStepDetector.w = new AsyncFileWriter( f );
+			mStepDetector.w = new AsyncFileWriter();
+			mStepDetector.w_gyro = new AsyncFileWriterGyro ();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -122,11 +124,12 @@ public class StepService extends Service {
 		
     	
 		mStepDetector.w.open();
+		mStepDetector.w_gyro.open();
 
     	try {
 			mStepDetector.cur = mStepDetector.objects.take();
-			Log.i("StepService" , "cur = " + mStepDetector.cur);
-		} catch (InterruptedException e) {
+			mStepDetector.cur_gyro = mStepDetector.objects_gyro.take();
+    	} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -181,15 +184,20 @@ public class StepService extends Service {
         // Stop detecting
         mSensorManager.unregisterListener(mStepDetector);
         mStepDetector.w.close();
+        mStepDetector.w_gyro.close();
 
         // Tell the user we stopped.
         Toast.makeText(this, getText(R.string.stopped), Toast.LENGTH_SHORT).show();
     }
 
     private void registerDetector() {
-        mSensor = mSensorManager.getDefaultSensor(
-            Sensor.TYPE_ACCELEROMETER);
+    	 mSensor = mSensorManager.getDefaultSensor( Sensor.TYPE_GYROSCOPE);
+         mSensorManager.registerListener(mStepDetector, mSensor, SensorManager.SENSOR_DELAY_FASTEST);
+    	
+    	mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         mSensorManager.registerListener(mStepDetector, mSensor, SensorManager.SENSOR_DELAY_FASTEST);
+        
+       
     }
 
     private void unregisterDetector() {
@@ -215,8 +223,6 @@ public class StepService extends Service {
 
     public void registerCallback(ICallback cb) {
         mCallback = cb;
-        //mStepDisplayer.passValue();
-        //mPaceListener.passValue();
     }
 
     
@@ -224,9 +230,6 @@ public class StepService extends Service {
         mSettings = PreferenceManager.getDefaultSharedPreferences(this);
         
         if (mStepDetector != null) { 
-            /*mStepDetector.setSensitivity(
-                    Float.valueOf(mSettings.getString("sensitivity", "10"))
-            );*/
         }
         
         if (mStepDisplayer    != null) mStepDisplayer.reloadSettings();

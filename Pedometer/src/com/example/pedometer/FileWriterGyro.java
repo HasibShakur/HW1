@@ -16,27 +16,26 @@ import android.util.Log;
 
 import com.example.pedometer.AccData;
 
-class AsyncFileWriter implements Runnable {
+class AsyncFileWriterGyro implements Runnable {
     private final File file;
     private final PrintWriter out;
-    private final BlockingQueue<AccData> queue = new LinkedBlockingQueue<AccData>();
+    private final BlockingQueue<GyroData> queue = new LinkedBlockingQueue<GyroData>();
     private volatile boolean started = false;
     private volatile boolean stopped = false;
 
-    public AsyncFileWriter() throws IOException {
-    	File f = new File(Environment.getExternalStorageDirectory() + File.separator + "trace1-data-acc.csv");
+    public AsyncFileWriterGyro() throws IOException {
+        File f = new File(Environment.getExternalStorageDirectory() + File.separator + "trace1-data-gyro.csv");
         this.file = f;
 		this.out = new PrintWriter(new FileOutputStream(f), true);
     }
     
-
-    public boolean append(AccData cur) {
-        if (!started) {
-            throw new IllegalStateException("open() call expected before append()");
-        }
-       
-        return  queue.offer(cur);
-    }
+    
+	public boolean append(GyroData cur_gyro) {
+		if (!started) {
+			throw new IllegalStateException("open() call expected before append()");
+		}
+		return queue.offer(cur_gyro);
+	}
 
     public void open() {
         this.started = true;
@@ -46,22 +45,20 @@ class AsyncFileWriter implements Runnable {
     public void run() {
         while (!stopped) {
             try {            	
-                AccData item = queue.take();
-               
-                if (item != null) {
-                    for (int i = 0; i<20 ; i++ ) {
-
+            	GyroData item_gyro = queue.take();
+                if (item_gyro != null) {
+                	for (int i = 0; i< 20 ; i++ ) {
 						// Print the contents to the file
 						// Format: time	 x_value  y_value  z_value \n
-						out.print(item.acc_time[i]);
+						out.print(item_gyro.gyro_time[i]);
 						out.print(",");
-						out.print(item.acc_x[i]);
+						out.print(item_gyro.gyro_x[i]);
 						out.print(",");
-						out.print(item.acc_y[i]);
+						out.print(item_gyro.gyro_y[i]);
 						out.print(",");
-						out.print(item.acc_z[i]);
+						out.print(item_gyro.gyro_z[i]);
 						out.println();
-					} 
+                	}
                 }
             } catch (InterruptedException e) {
             	e.printStackTrace();
