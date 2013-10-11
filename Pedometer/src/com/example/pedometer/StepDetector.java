@@ -83,6 +83,7 @@ public class StepDetector implements SensorEventListener
     
     public void onSensorChanged(SensorEvent event) {  
     	//Log.i("onSensorChanged", "" + cur);
+    	Log.i("onSensorChanged", "" + objects.size());
 
         Sensor sensor = event.sensor; 
         synchronized (this) {
@@ -100,6 +101,7 @@ public class StepDetector implements SensorEventListener
 	    				//Log.i("after for" , "" + cur.index);
 	    				if (w.append(cur)) {
 	    					cur = objects.poll();
+	    					objects.offer(new AccData());
 	    				}
                 	}
     				
