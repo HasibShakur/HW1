@@ -33,9 +33,6 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 
@@ -105,6 +102,7 @@ public class Pedometer extends Activity {
 
     }
     
+    
     @Override
     protected void onPause() {
         Log.i(TAG, "[ACTIVITY] onPause");
@@ -120,6 +118,7 @@ public class Pedometer extends Activity {
 
         super.onPause();
     }
+    
 
     @Override
     protected void onStop() {
@@ -201,26 +200,10 @@ public class Pedometer extends Activity {
 
     private static final int MENU_QUIT     = 9;
 
-    private static final int MENU_PAUSE = 1;
-    private static final int MENU_RESUME = 2;
-    private static final int MENU_RESET = 3;
     
     /* Creates the menu items */
     public boolean onPrepareOptionsMenu(Menu menu) {
         menu.clear();
-        if (mIsRunning) {
-            menu.add(0, MENU_PAUSE, 0, R.string.pause)
-            .setIcon(android.R.drawable.ic_media_pause)
-            .setShortcut('1', 'p');
-        }
-        else {
-            menu.add(0, MENU_RESUME, 0, R.string.resume)
-            .setIcon(android.R.drawable.ic_media_play)
-            .setShortcut('1', 'p');
-        }
-        menu.add(0, MENU_RESET, 0, R.string.reset)
-        .setIcon(android.R.drawable.ic_menu_close_clear_cancel)
-        .setShortcut('2', 'r');
         menu.add(0, MENU_QUIT, 0, R.string.quit)
         .setIcon(android.R.drawable.ic_lock_power_off)
         .setShortcut('9', 'q');
@@ -230,17 +213,6 @@ public class Pedometer extends Activity {
     /* Handles item selections */
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case MENU_PAUSE:
-                unbindStepService();
-                stopStepService();
-                return true;
-            case MENU_RESUME:
-                startStepService();
-                bindStepService();
-                return true;
-            case MENU_RESET:
-                resetValues(true);
-                return true;
             case MENU_QUIT:
                 resetValues(false);
                 unbindStepService();
@@ -257,25 +229,10 @@ public class Pedometer extends Activity {
         public void stepsChanged(int value) {
             mHandler.sendMessage(mHandler.obtainMessage(STEPS_MSG, value, 0));
         }
-        public void paceChanged(int value) {
-            mHandler.sendMessage(mHandler.obtainMessage(PACE_MSG, value, 0));
-        }
-        public void distanceChanged(float value) {
-            mHandler.sendMessage(mHandler.obtainMessage(DISTANCE_MSG, (int)(value*1000), 0));
-        }
-        public void speedChanged(float value) {
-            mHandler.sendMessage(mHandler.obtainMessage(SPEED_MSG, (int)(value*1000), 0));
-        }
-        public void caloriesChanged(float value) {
-            mHandler.sendMessage(mHandler.obtainMessage(CALORIES_MSG, (int)(value), 0));
-        }
     };
     
     private static final int STEPS_MSG = 1;
-    private static final int PACE_MSG = 2;
-    private static final int DISTANCE_MSG = 3;
-    private static final int SPEED_MSG = 4;
-    private static final int CALORIES_MSG = 5;
+
     
     private Handler mHandler = new Handler() {
         @Override public void handleMessage(Message msg) {

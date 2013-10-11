@@ -20,7 +20,6 @@ package com.example.pedometer;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.concurrent.ArrayBlockingQueue;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -112,8 +111,7 @@ public class StepService extends Service {
 				e.printStackTrace();
 			}
         }
-        
-        File f = new File(Environment.getExternalStorageDirectory() + File.separator + "example.csv");
+        File f = new File(Environment.getExternalStorageDirectory() + File.separator + "trace1-data-acc.csv");
 
 		try {
 			mStepDetector.w = new AsyncFileWriter( f );
@@ -226,9 +224,9 @@ public class StepService extends Service {
         mSettings = PreferenceManager.getDefaultSharedPreferences(this);
         
         if (mStepDetector != null) { 
-            mStepDetector.setSensitivity(
+            /*mStepDetector.setSensitivity(
                     Float.valueOf(mSettings.getString("sensitivity", "10"))
-            );
+            );*/
         }
         
         if (mStepDisplayer    != null) mStepDisplayer.reloadSettings();

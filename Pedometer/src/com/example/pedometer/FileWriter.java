@@ -24,10 +24,7 @@ class AsyncFileWriter implements Runnable {
 
     public AsyncFileWriter(File file) throws IOException {
         this.file = file;
-        int buffsize = 16000;
 		this.out = new PrintWriter(new FileOutputStream(file), true);
-
-        //this.out = new BufferedWriter(new java.io.FileWriter(file), buffsize);
     }
 
     public boolean append(AccData cur) {
@@ -50,9 +47,15 @@ class AsyncFileWriter implements Runnable {
                 if (item != null) {
                     for (int i = 0; i<20 ; i++ ) {
 						StringBuilder sb = new StringBuilder();
+						long time = System.nanoTime();
+						String string_time = Long.toString(time);
+						
 						String s0 = Float.toString(item.acc_x[i]);
 						String s1 = Float.toString(item.acc_y[i]);
 						String s2 = Float.toString(item.acc_z[i]);
+					
+						sb.append(string_time);
+						sb.append(",");
 						sb.append(s0);
 						sb.append(",");
 						sb.append(s1);
@@ -61,13 +64,6 @@ class AsyncFileWriter implements Runnable {
 						sb.append("\n");
           
 						out.println(sb.toString());
-						//out.flush();
-						//out.close();
-						//out.println(sb.toString());
-
-					    //Log.i("FileWriter", "successfully wrote" + s0 + s1 + s2);
-			
-						Log.i("Filewriter", "item = " + item);
 					} 
                 }
             } catch (InterruptedException e) {
@@ -75,12 +71,10 @@ class AsyncFileWriter implements Runnable {
             }
         }
         out.close();
-		Log.i("FileWriter", "successfully closed");
     }
 
     public void close() {
         this.stopped = true;
-        Log.i("FileWriter", "stopped");
     }
 }
 
