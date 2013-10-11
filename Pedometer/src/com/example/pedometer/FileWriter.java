@@ -2,6 +2,7 @@ package com.example.pedometer;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
@@ -24,7 +25,7 @@ class AsyncFileWriter implements Runnable {
         this.file = file;
 		this.out = new PrintWriter(file);
 
-       // this.out = new BufferedWriter(new java.io.FileWriter(file));
+        //this.out = new BufferedWriter(new java.io.FileWriter(file));
     }
 
     public boolean append(AccData cur) {
@@ -67,20 +68,16 @@ class AsyncFileWriter implements Runnable {
                             out.append(s2);
                             out.append("\n");
                             */
-                    		out.write(sb.toString());
+                    		out.append(sb.toString());
+                    		out.flush();
+                    		//out.close();
+                    		//out.println(sb.toString());
 
-                            Log.i("FileWriter", "successfully wrote" + s0 + s1 + s2);
+                            //Log.i("FileWriter", "successfully wrote" + s0 + s1 + s2);
                             //out.close();
                     	}
                     } catch (IOException logme) {
-                    } finally {
-                    	try {
-							out.close();
-				            Log.i("FileWriter", "successfully closed");
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-                    }
+                    } 
                 }
             } catch (InterruptedException e) {
             }

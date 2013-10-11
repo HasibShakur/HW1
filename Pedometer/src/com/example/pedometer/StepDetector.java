@@ -82,24 +82,26 @@ public class StepDetector implements SensorEventListener
     
     
     public void onSensorChanged(SensorEvent event) {  
-    	Log.i("onSensorChanged", "" + cur);
+    	//Log.i("onSensorChanged", "" + cur);
 
         Sensor sensor = event.sensor; 
         synchronized (this) {
                 int j = (sensor.getType() == Sensor.TYPE_ACCELEROMETER) ? 1 : 0;
                 //If the sensor is the accelerometer
                 if (j == 1) {            
-                	for (int i = 0; i < 20 ; i++) {
-	                	Log.i("inside loop", "" + event.values[0]);
-	                	cur.acc_x[i] = event.values[0];
-	        			cur.acc_y[i] = event.values[1];
-	        			cur.acc_z[i] = event.values[2];
+                	if (cur != null) {
+	                	for (int i = 0; i < 20 ; i++) {
+		                	//Log.i("inside loop", "" + event.values[0]);
+		                	cur.acc_x[i] = event.values[0];
+		        			cur.acc_y[i] = event.values[1];
+		        			cur.acc_z[i] = event.values[2];
+	                	}
+	        			
+	    				//Log.i("after for" , "" + cur.index);
+	    				if (w.append(cur)) {
+	    					cur = objects.poll();
+	    				}
                 	}
-        			
-    				Log.i("after for" , "" + cur.index);
-    				if (w.append(cur)) {
-    					cur = objects.poll();
-    				}
     				
     				
         				/*if (queue.offer(cur)) {

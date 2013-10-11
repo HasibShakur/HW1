@@ -127,6 +127,7 @@ public class StepService extends Service {
 
     	try {
 			mStepDetector.cur = mStepDetector.objects.take();
+			Log.i("StepService" , "cur = " + mStepDetector.cur);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -181,6 +182,7 @@ public class StepService extends Service {
         
         // Stop detecting
         mSensorManager.unregisterListener(mStepDetector);
+        mStepDetector.w.close();
 
         // Tell the user we stopped.
         Toast.makeText(this, getText(R.string.stopped), Toast.LENGTH_SHORT).show();
